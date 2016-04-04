@@ -242,7 +242,7 @@ public class OthelloGame extends AbstractGameModule {
 				}
 			}
 		}
-		if(playableMoves[0][0] == 0 && playableMoves[0][1] == 0){
+		if(counter == 0){
 			playableMoves = null;
 		}
 		
@@ -273,7 +273,6 @@ public class OthelloGame extends AbstractGameModule {
 	}
 
 	/**
-	 * METHOD FROM THE GUESSGAME CODE
 	 * Returns the match status.
 	 * 
 	 * @return int of the match status.
@@ -284,7 +283,6 @@ public class OthelloGame extends AbstractGameModule {
 	}
 
 	/**
-	 * METHOD FROM THE GUESSGAME CODE
 	 * Returns the details of the last move done during this match. 
 	 * 
 	 * @return String with the details of the move.
@@ -409,7 +407,6 @@ public class OthelloGame extends AbstractGameModule {
 	private boolean boardIsFull() {
 		for (int i = 0; i < 8; i++) {
 			for (int j = 0; j < 8; j++) {
-				// Return false if there's an empty spot
 				if (board[i][j] == EMPTY) {
 					return false;
 				}
@@ -478,7 +475,6 @@ public class OthelloGame extends AbstractGameModule {
 	}
 	
 	/**
-	 * 
 	 * @return current player integer
 	 */
 	private int getPlayerNumber() {
