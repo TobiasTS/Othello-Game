@@ -160,7 +160,7 @@ public class OthelloGame extends AbstractGameModule {
 			if(temp != null){
 				nextPlayer();
 			}else{
-				moveDetails +=  getPlayerToMove() + " has no available moves!" ;
+				moveDetails +=  getPlayerToMove() + " has no available moves!";
 			}
 			
 			break;
@@ -173,9 +173,53 @@ public class OthelloGame extends AbstractGameModule {
 	}
 	
 	/**
+	 * the Ai of orthello gets the best move
+	 * 
+	 * 
+	 */
+	public int[] doAIMove(int side){
+		int opp;
+		int[] reply = new int[3];
+		if (side == PLAYER2){
+			reply[2] = PLAYER1_WIN;
+			opp = PLAYER1;
+		}else{
+			reply[2] = PLAYER2_WIN;
+			opp = PLAYER2;
+		}
+		for(int i = 0; i < 8; i++){
+			for(int j = 0; j < 8; j++){
+				if(moveIsLegal(j, i,false)){
+					playMove(j, i);
+					int[] bestOpp = doAIMove(opp);
+					double bestValue;
+					if(side == PLAYER2){//maximizing
+						bestValue = Double.NEGATIVE_INFINITY;
+						//if(reply[2] < bestOpp[2]){
+							reply[0] = j;
+							reply[1] = i;
+							reply[2] = bestOpp[2];
+						//}
+					}
+					else{//minimizing
+						if(reply[2] > bestOpp[2]){
+							reply[0] = j;
+							reply[1] = i;
+							reply[2] = bestOpp[2];
+						}
+					}
+					board[j][i] = EMPTY;
+					
+				}
+			}
+		}
+		return reply;
+	}
+	
+	/**
 	 * method that returns the possible playable moves of a player
 	 * 
-	 * @returns
+	 * @returns 2D array with possible playable moves
 	 */
 	private int[][] getPlayableMoves(){
 		//TODO change length of array playableMoves
@@ -190,8 +234,11 @@ public class OthelloGame extends AbstractGameModule {
 				}
 			}
 		}
+		if(playableMoves[0][0] == 0 && playableMoves[0][1] == 0){
+			playableMoves = null;
+		}
 		
-		return null;
+		return playableMoves;
 	}
 	
 	/**
@@ -552,7 +599,7 @@ public class OthelloGame extends AbstractGameModule {
 	 * @return boolean
 	 */
 	private boolean isValid(int X, int Y){
-		if(X >= 0 || X <= 7 || Y >= 0 || Y <= 7) {
+		if(X >= 0 && X <= 7 && Y >= 0 && Y <= 7) {
 			return true;
 		}
 		return false;
