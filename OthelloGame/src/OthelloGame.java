@@ -121,7 +121,7 @@ public class OthelloGame extends AbstractGameModule {
 		}
 		
 		//checks if move is legal 
-		if(!moveIsLegal(X,Y)){
+		if(!moveIsLegal(X,Y,true)){
 			moveDetails = "Illegal move";
 			return;
 		}
@@ -155,7 +155,14 @@ public class OthelloGame extends AbstractGameModule {
 			moveDetails = "Next move";
 			moveDetails += '\n';
 			moveDetails += boardToString();
-			nextPlayer();
+			//TODO if no possible moves skip turn
+			int[][] temp = getPlayableMoves();
+			if(temp != null){
+				nextPlayer();
+			}else{
+				moveDetails +=  getPlayerToMove() + " has no available moves!" ;
+			}
+			
 			break;
 		default:
 			moveDetails = "Next move";
@@ -163,6 +170,28 @@ public class OthelloGame extends AbstractGameModule {
 			moveDetails += boardToString();
 			break;
 		}
+	}
+	
+	/**
+	 * method that returns the possible playable moves of a player
+	 * 
+	 * @returns
+	 */
+	private int[][] getPlayableMoves(){
+		//TODO change length of array playableMoves
+		int[][] playableMoves = new int[15][2];
+		int counter = 0;
+		for(int i = 0; i < 8; i++){
+			for(int j = 0; j < 8; j++){
+				if(moveIsLegal(j, i,false)){
+					playableMoves[counter][0] = i;
+					playableMoves[counter][1] = j;
+					counter++;
+				}
+			}
+		}
+		
+		return null;
 	}
 	
 	/**
@@ -427,7 +456,7 @@ public class OthelloGame extends AbstractGameModule {
 	 * @param Y column
 	 * @return true if move is legal
 	 */
-	public boolean moveIsLegal(int X, int Y){
+	public boolean moveIsLegal(int X, int Y, boolean update){
 		boolean canMove = false;
 		
 		if(!isValid(X,Y)){
@@ -447,7 +476,9 @@ public class OthelloGame extends AbstractGameModule {
 			}
 			if(board[xOffset][yOffset] == getOpponentNumber()){
 				if(offsetCheck(xOffset, yOffset, i)){
+					if(update){
 					updateTiles(xOffset, yOffset, i);
+					}
 					canMove = true;	
 				}
 			}
