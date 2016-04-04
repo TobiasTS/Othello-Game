@@ -157,16 +157,6 @@ public class OthelloGame extends AbstractGameModule {
 			break;
 		case UNCLEAR:
 			moveDetails = "Next move";
-<<<<<<< HEAD
-			moveDetails += '\n';
-			moveDetails += boardToString();
-			//TODO if no possible moves skip turn
-			int[][] temp = getPlayableMoves();
-			if(temp != null){
-				nextPlayer();
-			}else{
-				moveDetails +=  getPlayerToMove() + " has no available moves!";
-=======
 			//moveDetails += '\n';
 			//moveDetails += boardToString();
 			nextPlayer();
@@ -177,7 +167,6 @@ public class OthelloGame extends AbstractGameModule {
 			if(temp == null && !init){
 				moveDetails +=  getPlayerToMove() + " has no available moves!" ;
 				nextPlayer();
->>>>>>> 5301dc37b0833bed082ea5ae070780952cb48a82
 			}
 			
 			break;
@@ -253,19 +242,11 @@ public class OthelloGame extends AbstractGameModule {
 				}
 			}
 		}
-<<<<<<< HEAD
 		if(playableMoves[0][0] == 0 && playableMoves[0][1] == 0){
 			playableMoves = null;
 		}
 		
 		return playableMoves;
-=======
-		if(counter == 0)
-			return null;
-		else
-			return playableMoves;
-
->>>>>>> 5301dc37b0833bed082ea5ae070780952cb48a82
 	}
 	
 	/**
