@@ -33,7 +33,12 @@ public class OthelloGame extends AbstractGameModule {
 	private static final int DRAW = 1;
 	private static final int UNCLEAR = 2;
 	private static final int PLAYER2_WIN = 3;
+	
+	private static final int[] OFFSET_X = {-1, -1, -1,  0,  0,  1,  1,  1};
+	private static final int[] OFFSET_Y = {-1,  0,  1, -1,  1, -1,  0,  1};
 
+	private int[][] startW = {{3,3}, {4,4}};
+	private int[][] startB = {{3,4}, {4,3}};
 	
 	/**
 	 * Constructor of a new OthelloGame object.
@@ -48,6 +53,39 @@ public class OthelloGame extends AbstractGameModule {
 		playerResults = new HashMap<String, Integer>();
 		gameView = new GameView(playerOne, playerTwo);
 	}
+	
+	/**
+	 * Is called when a new game starts.
+	 * Decides which player goes first.
+	 * Clears the playing board.
+	 * 
+	 * @throws IllegalStateException if the match is already started or the match has finished.
+	 */
+	@Override
+	public void start() throws IllegalStateException {
+		super.start();
+		
+		if((Math.random() * 10) >= 5)
+			nextPlayer = playerOne;
+		else
+			nextPlayer = playerTwo;
+			
+		clearBoard();		
+		
+		if (getPlayerToMove() == playerOne) {
+			player1Char = 'B';
+			player2Char = 'W';
+		} else {
+			player2Char = 'W';
+			player1Char = 'B';
+		}
+		
+		//starting positions
+		board[startW[0][0]][startW[0][1]] = getPlayerNumber();
+		board[startW[1][0]][startW[1][1]] = getPlayerNumber();
+		board[startB[0][0]][startB[0][1]] = getOpponentNumber();
+		board[startB[1][0]][startB[1][1]] = getOpponentNumber();
+	}
 
 	/**
 	 * Method that handles and checks a move that is set by a player.
@@ -58,41 +96,41 @@ public class OthelloGame extends AbstractGameModule {
 	 * Tests if the game is finished after the move is played.
 	 * 
 	 * @param player the player that sets the move.
-	 * @param move the move that is played.
+	 * @param move the move that is played. Assumes move is "1,3"
 	 * @throws IllegalStateException if the match is not yet started, the match has finished or it is not player's turn.
 	 * 
 	 */
 	@Override
 	public void doPlayerMove(String player, String move) throws IllegalStateException {
 		super.doPlayerMove(player, move);
-		
+		int X; int Y;
 		if(!nextPlayer.equals(player)) {
 			throw new IllegalStateException("It is not player's turn");
 		}
 		
-		gameView.addText(String.format("%s: %s", player, move));
-		
-		int moveInt = -1;
-		
+		//parse move to X,Y
 		try {
-			moveInt = Integer.parseInt(move);
+			X = Integer.parseInt(move.substring(0, 1));
+			Y = Integer.parseInt(move.substring(2, 3));
 		} catch (NumberFormatException e) {
-			illegalPlayerMove(player);
+			moveDetails = "parse error";
+			return;
+		}catch (StringIndexOutOfBoundsException e){
+			moveDetails = "parse error";
 			return;
 		}
 		
-		if(moveInt < 0 || moveInt > 63 || board[moveInt / 8][moveInt % 8] != EMPTY) {
-			illegalPlayerMove(player);
+		//checks if move is legal 
+		if(!moveIsLegal(X,Y)){
+			moveDetails = "Illegal move";
 			return;
 		}
 		
-		// TODO: Check if move is legal Othello move
-		
-		playMove(moveInt);
-		
-		// TODO: Change the other values of the board
-		
+		playMove(X,Y);
+				
 		int moveOutcome = positionValue();
+		
+		gameView.addText(String.format("%s: %s", player, move));
 		
 		switch(moveOutcome) {
 		case PLAYER1_WIN:
@@ -125,19 +163,6 @@ public class OthelloGame extends AbstractGameModule {
 			moveDetails += boardToString();
 			break;
 		}
-	}
-
-	/**
-	 * METHOD FROM THE GUESSGAME CODE
-	 * Method that is called when an illegal move is played.
-	 * 
-	 * @param player the player that placed the illegal move.
-	 */
-	private void illegalPlayerMove(String player) {
-		matchStatus = MATCH_FINISHED;
-		moveDetails = "Illegal move";
-		playerResults.put(otherPlayer(player), PLAYER_WIN);
-		playerResults.put(player, PLAYER_LOSS);
 	}
 	
 	/**
@@ -194,7 +219,6 @@ public class OthelloGame extends AbstractGameModule {
 	}
 
 	/**
-	 * METHOD FROM THE GUESSGAME CODE
 	 * Returns the name of the player who is to move next.
 	 * 
 	 * @return String player who has to move next.
@@ -208,7 +232,6 @@ public class OthelloGame extends AbstractGameModule {
 	}
 
 	/**
-	 * METHOD FROM THE GUESSGAME CODE
 	 * Returns the result of a player.
 	 * 
 	 * @param player String of the player.
@@ -223,7 +246,6 @@ public class OthelloGame extends AbstractGameModule {
 	}
 	
 	/**
-	 * METHOD FROM THE GUESSGAME CODE
 	 * Returns the score of a player.
 	 * 
 	 * @param player String of the player.
@@ -238,7 +260,6 @@ public class OthelloGame extends AbstractGameModule {
 	}
 
 	/**
-	 * METHOD FROM THE GUESSGAME CODE
 	 * Returns the message of the move.
 	 * 
 	 * @return String with the move message.
@@ -251,7 +272,7 @@ public class OthelloGame extends AbstractGameModule {
 		String message = null;
 		
 		if(moveDetails == null) {
-			message = "Play a move using the numbers 0 till 8";
+			message = "Play a move using row,column E: 3,2";
 		} else {
 			message = moveDetails;
 		}
@@ -261,7 +282,6 @@ public class OthelloGame extends AbstractGameModule {
 
 	
 	/**
-	 * METHOD FROM THE GUESSGAME CODE
 	 * Returns the gameView component of the game.
 	 * 
 	 * @return Component game view.
@@ -271,32 +291,8 @@ public class OthelloGame extends AbstractGameModule {
 		return gameView;
 	}
 	
-	/**
-	 * Is called when a new game starts.
-	 * Decides which player goes first.
-	 * Clears the playing board.
-	 * 
-	 * @throws IllegalStateException if the match is already started or the match has finished.
-	 */
-	@Override
-	public void start() throws IllegalStateException {
-		super.start();
-		
-		// TODO: Implementation of random player starts.
-		
-		clearBoard();
-		nextPlayer = playerOne;
-		if (getPlayerToMove() == playerOne) {
-			player1Char = 'B';
-			player2Char = 'W';
-		} else {
-			player2Char = 'W';
-			player1Char = 'B';
-		}
-	}
 	
 	/**
-	 * METHOD FROM THE GUESSGAME CODE
 	 * Sets the next player to the other player.
 	 */
 	private void nextPlayer() {
@@ -304,7 +300,6 @@ public class OthelloGame extends AbstractGameModule {
 	}
 	
 	/**
-	 * METHOD FROM THE GUESSGAME CODE
 	 * Returns the other player.
 	 * 
 	 * @param player that is the current player.
@@ -314,15 +309,13 @@ public class OthelloGame extends AbstractGameModule {
 		return player.equals(playerOne) ? playerTwo : playerOne;
 	}
 	
-	// Methods for Tic Tac Toe
-	
 	/**
 	 * Plays a move by putting it on the board.
 	 * 
 	 * @param move integer that represents a position on the board.
 	 */
-	private void playMove(int move) {
-		board[move / 3][move % 3] = getPlayerNumber();
+	private void playMove(int X, int Y) {
+		board[X][Y] = getPlayerNumber();
 	}
 	
 	/**
@@ -331,8 +324,8 @@ public class OthelloGame extends AbstractGameModule {
 	 * @return boolean if the board is full.
 	 */
 	private boolean boardIsFull() {
-		for (int i = 0; i < 3; i++) {
-			for (int j = 0; j < 3; j++) {
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < 8; j++) {
 				// Return false if there's an empty spot
 				if (board[i][j] == EMPTY) {
 					return false;
@@ -346,8 +339,8 @@ public class OthelloGame extends AbstractGameModule {
 	 * Clears the playing board.
 	 */
 	private void clearBoard() {
-		for (int i = 0; i < 3; i++) {
-			for (int j = 0; j < 3; j++) {
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j <8; j++) {
 				board[i][j] = EMPTY;
 			}
 		}
@@ -360,50 +353,22 @@ public class OthelloGame extends AbstractGameModule {
 	 * @return the value of the game.
 	 */
 	private int positionValue() {
-		// Initialize arrays for the sums of rows, columns and diagonals
-		String[] columns = new String[3];
-		String[] rows = new String[3];
-		String[] diagonals = new String[2];
-
-		// Fill the arrays with an empty string
-		Arrays.fill(columns, "");
-		Arrays.fill(rows, "");
-		Arrays.fill(diagonals, "");
-		
-		// Check column and row wins
-		for (int i = 0; i < 3; i++) {
-			diagonals[0] += board[i][i]+"";
-		    diagonals[1] += board[i][2-i]+ "";
-			for (int j = 0; j < 3; j++) {
-				columns[i] += board[j][i];
-				rows[i] += board[i][j];
+		if(boardIsFull()){
+			int player1 = 0;
+			int player2 = 0;
+			for(int row = 0; row < 8; row++){
+				for(int column = 0; column < 8; column++){
+					if(board[row][column] == PLAYER1)
+						player1++;
+					else
+						player2++;
+				}
 			}
+			
+			return player1 > player2 ? PLAYER1 : PLAYER2;
+		}else{
+			return UNCLEAR;
 		}
-		
-		// Check for column wins
-		for (int i = 0; i < 3; i++) {
-			if (rows[i].equals("000") || columns[i].equals("000")) {
-				return PLAYER1_WIN;
-			} else if (rows[i].equals("111") || columns[i].equals("111")) {
-				return PLAYER2_WIN;
-			}
-		}
-		
-		// Check for diagonal wins
-		for (int i = 0; i < 2; i++) {
-			if (diagonals[i].equals("000")) {
-				return PLAYER1_WIN;
-			} else if (diagonals[i].equals("111")) {
-				return PLAYER2_WIN;
-			}
-		}
-
-		// Check if board is full (draw)
-		if (boardIsFull()) {
-			return DRAW;
-		}
-
-		return UNCLEAR;
 	}
 	
 	/**
@@ -411,11 +376,11 @@ public class OthelloGame extends AbstractGameModule {
 	 * 
 	 * @return String representation of the board.
 	 */
-	private String boardToString() {
+	public String boardToString() {
 		String str = "";
 		
-		for (int i = 0; i < 3; i++) {
-			for (int j = 0; j < 3; j++) {
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < 8; j++) {
 				if (board[i][j] == PLAYER2)
 					str += player2Char;
 				else if (board[i][j] == PLAYER1)
@@ -429,6 +394,10 @@ public class OthelloGame extends AbstractGameModule {
 		return str;
 	}
 	
+	/**
+	 * 
+	 * @return current player integer
+	 */
 	private int getPlayerNumber() {
 		if(getPlayerToMove() == playerOne) {
 			return PLAYER1;
@@ -437,4 +406,126 @@ public class OthelloGame extends AbstractGameModule {
 			return PLAYER2;
 		}
 	}
+	
+	/**
+	 * @return opponents player integer
+	 */
+	private int getOpponentNumber() {
+		if(getPlayerToMove() != playerOne) {
+			return PLAYER1;
+		}
+		else {
+			return PLAYER2;
+		}
+	}
+	
+	
+	/**
+	 * return true move is legal
+	 * 
+	 * @param X row
+	 * @param Y column
+	 * @return true if move is legal
+	 */
+	public boolean moveIsLegal(int X, int Y){
+		boolean canMove = false;
+		
+		if(!isValid(X,Y)){
+			return false;
+		}
+
+		if( board[X][Y] != EMPTY){
+			return false;
+		}
+
+		for(int i=0; i < 8; i++){
+			int xOffset = X + OFFSET_X[i];
+			int yOffset = Y + OFFSET_Y[i];
+			
+			if(!isValid(xOffset, yOffset)) {
+				break;
+			}
+			if(board[xOffset][yOffset] == getOpponentNumber()){
+				if(offsetCheck(xOffset, yOffset, i)){
+					updateTiles(xOffset, yOffset, i);
+					canMove = true;	
+				}
+			}
+		}
+		
+		return canMove;
+	}
+
+	/**
+	 * Recursive - checks if theres a currentplayer coin on the other side
+	 * 
+	 * @param X starting row
+	 * @param Y starting column
+	 * @param i direction to check
+	 * @return true if theres a current player coin on the other side
+	 */
+	private boolean offsetCheck(int X, int Y, int i) {
+		
+		int xOffset = X + OFFSET_X[i];
+		int yOffset = Y + OFFSET_Y[i];
+		
+		if(!isValid(xOffset, yOffset)) {
+			return false;
+		}
+		if(board[xOffset][yOffset] == getPlayerNumber()){
+			return true;
+		}
+		if(board[xOffset][yOffset] == EMPTY){
+			return false;
+		}
+		return offsetCheck(xOffset, yOffset, i);
+		
+	/*	if(offsetCheck(xOffset, yOffset,i)){
+			board[xOffset][yOffset] = getPlayerNumber();
+			return true;
+		}else{
+			return false;
+		}*/
+	
+	}
+	
+	/**
+	 * When a move is legal, all the tiles in that row should be switched
+	 * 
+	 * @param X row
+	 * @param Y column
+	 * @param i direction
+	 */
+	private void updateTiles(int X, int Y, int i) {
+		board[X][Y] = getPlayerNumber();
+		
+		int xOffset = X + OFFSET_X[i];
+		int yOffset = Y + OFFSET_Y[i];
+		
+		if(!isValid(xOffset, yOffset)) {
+			return;
+		}
+		if(board[xOffset][yOffset] == getPlayerNumber()){
+			return;
+		}
+		
+		if(board[xOffset][yOffset] == getOpponentNumber()){
+			updateTiles(xOffset, yOffset, i);
+		}
+	}
+	
+	/**
+	 * returns true if X and Y are within the board
+	 * @param X row
+	 * @param Y columns
+	 * @return boolean
+	 */
+	private boolean isValid(int X, int Y){
+		if(X >= 0 || X <= 7 || Y >= 0 || Y <= 7) {
+			return true;
+		}
+		return false;
+	}
+	
+
 }

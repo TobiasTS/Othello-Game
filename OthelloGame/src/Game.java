@@ -5,6 +5,6 @@
  */
 public class Game {
 	
-	public static final String GAME_TYPE = "Othello v0.1";
+	public static final String GAME_TYPE = "Othello v1.1";
 
 }
