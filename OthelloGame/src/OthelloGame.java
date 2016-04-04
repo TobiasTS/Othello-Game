@@ -36,9 +36,6 @@ public class OthelloGame extends AbstractGameModule {
 	
 	private static final int[] OFFSET_X = {-1, -1, -1,  0,  0,  1,  1,  1};
 	private static final int[] OFFSET_Y = {-1,  0,  1, -1,  1, -1,  0,  1};
-
-	private int[][] startW = {{3,3}, {4,4}};
-	private int[][] startB = {{3,4}, {4,3}};
 	
 	/**
 	 * Constructor of a new OthelloGame object.
@@ -65,10 +62,10 @@ public class OthelloGame extends AbstractGameModule {
 	public void start() throws IllegalStateException {
 		super.start();
 		
-		if((Math.random() * 10) >= 5)
+	//	if((Math.random() * 10) >= 5)
 			nextPlayer = playerOne;
-		else
-			nextPlayer = playerTwo;
+	//	else
+	//		nextPlayer = playerTwo;
 			
 		clearBoard();		
 		
@@ -80,11 +77,12 @@ public class OthelloGame extends AbstractGameModule {
 			player1Char = 'B';
 		}
 		
-		//starting positions
-		board[startW[0][0]][startW[0][1]] = getPlayerNumber();
-		board[startW[1][0]][startW[1][1]] = getPlayerNumber();
-		board[startB[0][0]][startB[0][1]] = getOpponentNumber();
-		board[startB[1][0]][startB[1][1]] = getOpponentNumber();
+		//init
+		doPlayerMove(playerOne,"3,3");
+		doPlayerMove(playerTwo,"3,4");
+		doPlayerMove(playerOne,"4,4");
+		doPlayerMove(playerTwo,"4,3");
+
 	}
 
 	/**
@@ -96,7 +94,7 @@ public class OthelloGame extends AbstractGameModule {
 	 * Tests if the game is finished after the move is played.
 	 * 
 	 * @param player the player that sets the move.
-	 * @param move the move that is played. Assumes move is "1,3"
+	 * @param move the move that is played. Assumes move format is "1,3"
 	 * @throws IllegalStateException if the match is not yet started, the match has finished or it is not player's turn.
 	 * 
 	 */
@@ -104,6 +102,8 @@ public class OthelloGame extends AbstractGameModule {
 	public void doPlayerMove(String player, String move) throws IllegalStateException {
 		super.doPlayerMove(player, move);
 		int X; int Y;
+		boolean init = false;
+		
 		if(!nextPlayer.equals(player)) {
 			throw new IllegalStateException("It is not player's turn");
 		}
@@ -120,12 +120,16 @@ public class OthelloGame extends AbstractGameModule {
 			return;
 		}
 		
+		if((X == 3 && Y == 3) || (X == 3 && Y == 4) || (X == 4 && Y == 4) || (X == 4 && Y == 3)){ 
+			init = true;
+		}
+		
 		//checks if move is legal 
-		if(!moveIsLegal(X,Y,true)){
+		if(!moveIsLegal(X,Y,true) && !init){
 			moveDetails = "Illegal move";
 			return;
 		}
-		
+
 		playMove(X,Y);
 				
 		int moveOutcome = positionValue();
@@ -153,6 +157,7 @@ public class OthelloGame extends AbstractGameModule {
 			break;
 		case UNCLEAR:
 			moveDetails = "Next move";
+<<<<<<< HEAD
 			moveDetails += '\n';
 			moveDetails += boardToString();
 			//TODO if no possible moves skip turn
@@ -161,13 +166,25 @@ public class OthelloGame extends AbstractGameModule {
 				nextPlayer();
 			}else{
 				moveDetails +=  getPlayerToMove() + " has no available moves!";
+=======
+			//moveDetails += '\n';
+			//moveDetails += boardToString();
+			nextPlayer();
+			int[][] temp = null;
+			if(!init){
+				temp = getPlayableMoves();
+			}
+			if(temp == null && !init){
+				moveDetails +=  getPlayerToMove() + " has no available moves!" ;
+				nextPlayer();
+>>>>>>> 5301dc37b0833bed082ea5ae070780952cb48a82
 			}
 			
 			break;
 		default:
 			moveDetails = "Next move";
-			moveDetails += '\n';
-			moveDetails += boardToString();
+		//	moveDetails += '\n';
+		//	moveDetails += boardToString();
 			break;
 		}
 	}
@@ -223,26 +240,35 @@ public class OthelloGame extends AbstractGameModule {
 	 */
 	private int[][] getPlayableMoves(){
 		//TODO change length of array playableMoves
-		int[][] playableMoves = new int[15][2];
+		int[][] playableMoves = new int[63][2];
 		int counter = 0;
 		for(int i = 0; i < 8; i++){
 			for(int j = 0; j < 8; j++){
-				if(moveIsLegal(j, i,false)){
-					playableMoves[counter][0] = i;
-					playableMoves[counter][1] = j;
-					counter++;
+				if(board[i][j] == EMPTY){
+					if(moveIsLegal(j, i,false)){
+						playableMoves[counter][0] = i;
+						playableMoves[counter][1] = j;
+						counter++;
+					}
 				}
 			}
 		}
+<<<<<<< HEAD
 		if(playableMoves[0][0] == 0 && playableMoves[0][1] == 0){
 			playableMoves = null;
 		}
 		
 		return playableMoves;
+=======
+		if(counter == 0)
+			return null;
+		else
+			return playableMoves;
+
+>>>>>>> 5301dc37b0833bed082ea5ae070780952cb48a82
 	}
 	
 	/**
-	 * METHOD FROM THE GUESSGAME CODE
 	 * Returns the String commenting on the result of the match.
 	 * 
 	 * @return String with a comment on the match.
@@ -524,7 +550,7 @@ public class OthelloGame extends AbstractGameModule {
 			if(board[xOffset][yOffset] == getOpponentNumber()){
 				if(offsetCheck(xOffset, yOffset, i)){
 					if(update){
-					updateTiles(xOffset, yOffset, i);
+						updateTiles(xOffset, yOffset, i);
 					}
 					canMove = true;	
 				}
