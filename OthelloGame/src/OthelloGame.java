@@ -56,8 +56,12 @@ public class OthelloGame extends AbstractGameModule {
 		OthelloGame game = new OthelloGame("piet", "klaas");
 		game.start();
 		System.out.print(game.boardToString());
-		double[] aiMove = game.doAIMove("klaas",60,game.board);
-		game.doPlayerMove("klaas", ""+(int) aiMove[0]+","+(int) aiMove[1]);
+		double[] aiMove = game.doAIMove(game.getCurrentPlayer(),60,game.copyBoard(game.board));
+		//game.initBoard();
+		game.doPlayerMove(game.getCurrentPlayer(), ""+(int) aiMove[0]+","+(int) aiMove[1]);
+		System.out.print(game.boardToString());
+		aiMove = game.doAIMove(game.getCurrentPlayer(),60,game.copyBoard(game.board));
+		game.doPlayerMove(game.getCurrentPlayer(), ""+(int) aiMove[0]+","+(int) aiMove[1]);
 		System.out.print(game.boardToString());
 	}
 	
@@ -76,6 +80,7 @@ public class OthelloGame extends AbstractGameModule {
 			nextPlayer = playerOne;
 		else
 			nextPlayer = playerTwo;
+		nextPlayer = playerTwo;
 			
 		clearBoard();		
 		
@@ -195,19 +200,18 @@ public class OthelloGame extends AbstractGameModule {
 			reply[2] = PLAYER2_WIN;
 			opp = PLAYER2;
 		}*/
-		//position value to get win value
-		//System.arraycopy(tempBoard,0,board,0,8);
-		tempBoard = board.clone();
+		//System.arraycopy(board,0,tempBoard,0,8);
+		tempBoard = Arrays.copyOf(board, 8);
 		for(int i = 0; i < 8; i++){
 			for(int j = 0; j < 8; j++){
 				if(moveIsLegal(j, i,true,tempBoard)){
-					tempBoard = board.clone();
-					//System.arraycopy(tempBoard,0,board,0,8);
+					tempBoard = Arrays.copyOf(board, 8);
+					//System.arraycopy(board,0,tempBoard,0,8);
 					playMove(j, i, tempBoard);
 					int state = positionValue(tempBoard);
 					if(state == UNCLEAR || depth != 0){
 						//doPlayerMove(side,""+j+i);
-						nextPlayer();
+						//nextPlayer();
 						double[] bestOpp = doAIMove(nextPlayer,depth-1,tempBoard);
 						double bestValue;
 						if(side.equals(playerTwo)){//maximizing
@@ -249,6 +253,17 @@ public class OthelloGame extends AbstractGameModule {
 			}
 		}
 		return reply;
+	}
+	
+	private int[][] copyBoard(int[][] origBoard){
+		int[][] newBoard = new int[8][8];
+		for(int i = 0; i < 8; i++){
+			for(int j = 0; j < 8; j++){
+				newBoard[i][j] = origBoard[i][j];
+			}
+		}
+		
+		return newBoard;	
 	}
 	
 	/**
@@ -314,6 +329,22 @@ public class OthelloGame extends AbstractGameModule {
 		return nextPlayer;
 	}
 
+	/**
+	 * Returns the name of the player who is to move .
+	 * 
+	 * @return String player who has to move next.
+	 * @throws IllegalStateException if the match has not yet finished.
+	 */
+	
+	public String getCurrentPlayer() throws IllegalStateException {		
+		int player = getPlayerNumber();
+		if(player == 0 ){
+			return playerOne;
+		}else{
+			return playerTwo;
+		}
+	}
+	
 	/**
 	 * Returns the result of a player.
 	 * 
