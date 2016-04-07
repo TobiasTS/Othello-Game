@@ -56,13 +56,12 @@ public class OthelloGame extends AbstractGameModule {
 		OthelloGame game = new OthelloGame("piet", "klaas");
 		game.start();
 		System.out.print(game.boardToString());
+			
+		for(int i = 0; i < 61; i++){
 		double[] aiMove = game.doAIMove(game.getCurrentPlayer(),60,game.copyBoard(game.board));
-		//game.initBoard();
 		game.doPlayerMove(game.getCurrentPlayer(), ""+(int) aiMove[0]+","+(int) aiMove[1]);
 		System.out.print(game.boardToString());
-		aiMove = game.doAIMove(game.getCurrentPlayer(),60,game.copyBoard(game.board));
-		game.doPlayerMove(game.getCurrentPlayer(), ""+(int) aiMove[0]+","+(int) aiMove[1]);
-		System.out.print(game.boardToString());
+		}
 	}
 	
 	/**
@@ -76,11 +75,11 @@ public class OthelloGame extends AbstractGameModule {
 	public void start() throws IllegalStateException {
 		super.start();
 		
-		if((Math.random() * 10) >= 5)
-			nextPlayer = playerOne;
-		else
+//		if((Math.random() * 10) >= 5)
+//			nextPlayer = playerOne;
+//		else
 			nextPlayer = playerTwo;
-		nextPlayer = playerTwo;
+//		nextPlayer = playerTwo;
 			
 		clearBoard();		
 		
@@ -189,65 +188,50 @@ public class OthelloGame extends AbstractGameModule {
 	 * 
 	 */
 	public double[] doAIMove(String side, int depth,int[][] board){
-		
+		//TODO fix tempboard
+		//TODO fix if cant move
 		double[] reply = new double[3];
 		int[][] tempBoard = new int[8][8];
-		
-		/*if (side == PLAYER2){
-			reply[2] = PLAYER1_WIN;
-			opp = PLAYER1;
-		}else{
-			reply[2] = PLAYER2_WIN;
-			opp = PLAYER2;
-		}*/
-		//System.arraycopy(board,0,tempBoard,0,8);
-		tempBoard = Arrays.copyOf(board, 8);
 		for(int i = 0; i < 8; i++){
 			for(int j = 0; j < 8; j++){
-				if(moveIsLegal(j, i,true,tempBoard)){
-					tempBoard = Arrays.copyOf(board, 8);
-					//System.arraycopy(board,0,tempBoard,0,8);
+				if(moveIsLegal(j, i,false,board)){
+					tempBoard = copyBoard(board);
+					moveIsLegal(j,i,true,tempBoard);
 					playMove(j, i, tempBoard);
 					int state = positionValue(tempBoard);
 					if(state == UNCLEAR || depth != 0){
-						//doPlayerMove(side,""+j+i);
-						//nextPlayer();
-						double[] bestOpp = doAIMove(nextPlayer,depth-1,tempBoard);
+						double[] bestOpp = doAIMove(nextPlayer,depth-1,tempBoard);//TODO nextplayer is fout
 						double bestValue;
-						if(side.equals(playerTwo)){//maximizing
-							//bestValue = Double.NEGATIVE_INFINITY;
-							bestValue = -60;
-							//if(reply[2] < bestOpp[2]){
-							if(bestValue > bestOpp[2]){
+						if(side.equals(playerOne)){//maximizing
+							bestValue = Double.NEGATIVE_INFINITY;
+							//bestValue = -60;
+							if(Math.max(bestValue, bestOpp[2]) == bestValue){
 								reply[2] = bestValue;
-							}else{
+							}else if(Math.max(bestValue, bestOpp[2]) == bestOpp[2]){
 								reply[2] = bestOpp[2];
 							}
-							//}
 						}
-						else if(side.equals(playerOne)){//minimizing
-							//bestValue = Double.POSITIVE_INFINITY;
-							bestValue = 60;
-							//if(reply[2] > bestOpp[2]){
-							if(bestValue < bestOpp[2]){
+						else if(side.equals(playerTwo)){//minimizing
+							bestValue = Double.POSITIVE_INFINITY;
+							//bestValue = 60;
+							if(Math.min(bestValue, bestOpp[2]) == bestValue){
 								reply[2] = bestValue;
-							}else{
+							}else if(Math.min(bestValue, bestOpp[2]) == bestOpp[2]){
 								reply[2] = bestOpp[2];
 							}
-							//}
 						}
 						reply[0] = j;
 						reply[1] = i;
 						tempBoard[j][i] = EMPTY;
 					}else{
 						if(side.equals(playerOne)){
-							reply[2] = -60 + depth;
-						}else if(side.equals(playerTwo)){
 							reply[2] = 60 - depth;
+						}else if(side.equals(playerTwo)){
+							reply[2] = depth - 60;
 						}
 						reply[0] = j;
 						reply[1] = i;
-						
+						tempBoard[j][i] = EMPTY;
 					}
 				}
 			}
@@ -583,7 +567,7 @@ public class OthelloGame extends AbstractGameModule {
 			int yOffset = Y + OFFSET_Y[i];
 			
 			if(!isValid(xOffset, yOffset)) {
-				break;
+				continue;
 			}
 			if(board[xOffset][yOffset] == getOpponentNumber()){
 				if(offsetCheck(xOffset, yOffset, i, board)){
