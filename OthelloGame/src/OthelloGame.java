@@ -58,7 +58,7 @@ public class OthelloGame extends AbstractGameModule {
 		System.out.print(game.boardToString());
 			
 		for(int i = 0; i < 61; i++){
-		double[] aiMove = game.doAIMove(game.getCurrentPlayer(),60,game.copyBoard(game.board));
+		double[] aiMove = game.doAIMove(game.getCurrentPlayer(),5,game.copyBoard(game.board));
 		game.doPlayerMove(game.getCurrentPlayer(), ""+(int) aiMove[0]+","+(int) aiMove[1]);
 		System.out.print(game.boardToString());
 		}
@@ -188,10 +188,17 @@ public class OthelloGame extends AbstractGameModule {
 	 * 
 	 */
 	public double[] doAIMove(String side, int depth,int[][] board){
-		//TODO fix tempboard
 		//TODO fix if cant move
 		double[] reply = new double[3];
 		int[][] tempBoard = new int[8][8];
+		double bestValue = 0.0;
+		if(side.equals(playerOne)){
+			//bestValue = Double.NEGATIVE_INFINITY;
+			bestValue = -60;
+		}else if(side.equals(playerTwo)){
+			//bestValue = Double.POSITIVE_INFINITY;
+			bestValue = 60;
+		}
 		for(int i = 0; i < 8; i++){
 			for(int j = 0; j < 8; j++){
 				if(moveIsLegal(j, i,false,board)){
@@ -199,39 +206,57 @@ public class OthelloGame extends AbstractGameModule {
 					moveIsLegal(j,i,true,tempBoard);
 					playMove(j, i, tempBoard);
 					int state = positionValue(tempBoard);
-					if(state == UNCLEAR || depth != 0){
-						double[] bestOpp = doAIMove(nextPlayer,depth-1,tempBoard);//TODO nextplayer is fout
-						double bestValue;
+					if(state == UNCLEAR && depth != 0){
+						nextPlayer();
+						double[] bestOpp = doAIMove(nextPlayer,depth-1,tempBoard);
+						nextPlayer();
 						if(side.equals(playerOne)){//maximizing
-							bestValue = Double.NEGATIVE_INFINITY;
-							//bestValue = -60;
-							if(Math.max(bestValue, bestOpp[2]) == bestValue){
+							//bestValue = Double.NEGATIVE_INFINITY;
+							//bestValue = 60;
+							/*if(Math.max(Math.max(bestValue,bestOpp[2]), reply[2]) == bestValue){
 								reply[2] = bestValue;
-							}else if(Math.max(bestValue, bestOpp[2]) == bestOpp[2]){
+							}else if(Math.max(Math.max(bestValue,bestOpp[2]), reply[2]) == bestOpp[2]){
 								reply[2] = bestOpp[2];
+								bestValue = bestOpp[2];
+							}else if(Math.max(Math.max(bestValue,bestOpp[2]), reply[2]) == reply[2]){
+								bestValue = reply[2];
+							}*/
+							bestValue = Math.max(bestValue,bestOpp[2]);
+							if(bestValue == bestOpp[2]){
+								reply[0] = j;
+								reply[1] = i;
 							}
 						}
 						else if(side.equals(playerTwo)){//minimizing
-							bestValue = Double.POSITIVE_INFINITY;
-							//bestValue = 60;
-							if(Math.min(bestValue, bestOpp[2]) == bestValue){
+							//bestValue = Double.POSITIVE_INFINITY;
+							//bestValue = -60;
+							/*if(Math.min(bestValue, bestOpp[2]) == bestValue){
 								reply[2] = bestValue;
 							}else if(Math.min(bestValue, bestOpp[2]) == bestOpp[2]){
 								reply[2] = bestOpp[2];
+							}//elseif reply[2]*/
+							bestValue = Math.min(bestValue,bestOpp[2]);
+							if(bestValue == bestOpp[2]){
+								reply[0] = j;
+								reply[1] = i;
 							}
 						}
-						reply[0] = j;
-						reply[1] = i;
+						reply[2] = bestValue;
 						tempBoard[j][i] = EMPTY;
 					}else{
-						if(side.equals(playerOne)){
-							reply[2] = 60 - depth;
-						}else if(side.equals(playerTwo)){
-							reply[2] = depth - 60;
+						int winning = checkWhoWon(tempBoard);
+						if(winning == PLAYER1){
+							bestValue = 60 - depth;
+						}else if(winning == PLAYER2){
+							bestValue = depth - 60;
+						}else{
+							bestValue = 0;
 						}
 						reply[0] = j;
 						reply[1] = i;
+						reply[2] = bestValue;
 						tempBoard[j][i] = EMPTY;
+						return reply;
 					}
 				}
 			}
@@ -466,6 +491,26 @@ public class OthelloGame extends AbstractGameModule {
 		}else{
 			return UNCLEAR;
 		}
+	}
+	
+	/**
+	 * Decides what the value of the game is at the moment.
+	 * The value can be PLAYER1_WIN, PLAYER2_WIN, DRAW of UNCLEAR.
+	 * 
+	 * @return the value of the game.
+	 */
+	private int checkWhoWon(int[][] board) {
+			int player1 = 0;
+			int player2 = 0;
+			for(int row = 0; row < 8; row++){
+				for(int column = 0; column < 8; column++){
+					if(board[row][column] == PLAYER1)
+						player1++;
+					else
+						player2++;
+				}
+			}
+			return player1 > player2 ? PLAYER1 : PLAYER2;
 	}
 	
 	/**
