@@ -76,9 +76,9 @@ public class OthelloGame extends AbstractGameModule {
 		super.start();
 		
 //		if((Math.random() * 10) >= 5)
-//			nextPlayer = playerOne;
+			nextPlayer = playerOne;
 //		else
-			nextPlayer = playerTwo;
+	//		nextPlayer = playerTwo;
 //		nextPlayer = playerTwo;
 			
 		clearBoard();		
@@ -164,13 +164,10 @@ public class OthelloGame extends AbstractGameModule {
 			moveDetails = "Next move";
 			//moveDetails += '\n';
 			//moveDetails += boardToString();
-			nextPlayer();
-			int[][] temp = null;
-			temp = getPlayableMoves();
-		
-			if(temp == null){
-				moveDetails =  getPlayerToMove() + " has no available moves!" ;
+			if(getPlayableMoves()){
 				nextPlayer();
+			}else{
+				moveDetails =  getPlayerToMove() + " has no available moves!" ;
 			}
 			
 			break;
@@ -476,21 +473,35 @@ public class OthelloGame extends AbstractGameModule {
 	 */
 	private int positionValue(int[][] board) {
 		if(boardIsFull(board)){
-			int player1 = 0;
-			int player2 = 0;
-			for(int row = 0; row < 8; row++){
-				for(int column = 0; column < 8; column++){
-					if(board[row][column] == PLAYER1)
-						player1++;
-					else
-						player2++;
-				}
+			return mostChips();
+		}else{
+			if(!getPlayableMoves()){
+				nextPlayer();
+				if(!getPlayableMoves()){
+					return mostChips();
+				}				
+				nextPlayer();
 			}
 			
-			return player1 > player2 ? PLAYER1 : PLAYER2;
-		}else{
 			return UNCLEAR;
 		}
+	}
+	
+	private int mostChips() {
+		int player1 = 0;
+		int player2 = 0;
+		for(int row = 0; row < 8; row++){
+			for(int column = 0; column < 8; column++){
+				if(board[row][column] == PLAYER1)
+					player1++;
+				else
+					player2++;
+			}
+		}
+		if(player1 == player2 )
+			return DRAW;
+		
+		return player1 > player2 ? PLAYER1 : PLAYER2;
 	}
 	
 	/**
@@ -541,27 +552,23 @@ public class OthelloGame extends AbstractGameModule {
 	 * 
 	 * @returns 2D array with possible playable moves
 	 */
-	//TODO hoeft niet gebruikt te worden @marcel
-	private int[][] getPlayableMoves(){
-		//TODO change length of array playableMoves
+	private boolean getPlayableMoves(){
 		int[][] playableMoves = new int[63][2];
 		int counter = 0;
 		for(int i = 0; i < 8; i++){
 			for(int j = 0; j < 8; j++){
 				if(board[i][j] == EMPTY){
 					if(moveIsLegal(j, i,false,board)){
-						playableMoves[counter][0] = i;
-						playableMoves[counter][1] = j;
-						counter++;
+						return true;
 					}
 				}
 			}
 		}
 		if(counter == 0){
-			playableMoves = null;
+			return false;
+		}else{
+			return true;
 		}
-		
-		return playableMoves;
 	}
 	
 	/**

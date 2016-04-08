@@ -77,6 +77,21 @@ public class OthelloGameTest {
 		System.out.println(game.getMoveDetails());
 		System.out.println(game.boardToString());
 		
+		//WWW
+		game.doPlayerMove(game.getPlayerToMove(),"1,0");
+		System.out.println(game.getMoveDetails());
+		System.out.println(game.boardToString());
+		
+		//BBB
+		game.doPlayerMove(game.getPlayerToMove(),"2.3");
+		System.out.println(game.getMoveDetails());
+		System.out.println(game.boardToString());
+		
+		//WWW
+		game.doPlayerMove(game.getPlayerToMove(),"4,0");
+		System.out.println(game.getMoveDetails());
+		System.out.println(game.boardToString());
+		
 	}
 
 }
