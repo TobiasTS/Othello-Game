@@ -17,18 +17,28 @@ public class OthelloGameTest {
 		assertEquals(game.board[4][3], OthelloGame.PLAYER2);
 	}
 	
-	/*@Test
+	@Test
 	public void testUpdateTiles(){
 		OthelloGame game = new OthelloGame("Piet","Klaas");
 		game.start();
+		//System.out.println(game.getPlayerToMove());
+		//System.out.println(game.getMoveDetails());
+		///System.out.println(game.boardToString());
 		
-		System.out.println(game.boardToString());
+		game.doPlayerMove(game.getPlayerToMove(),"4,5");
+		assertEquals(game.board[4][3], OthelloGame.PLAYER2);
+		assertEquals(game.board[4][4], OthelloGame.PLAYER2);
+		assertEquals(game.board[4][5], OthelloGame.PLAYER2);
 		
-		game.doPlayerMove(game.getPlayerToMove(),"4,2");
-		System.out.println(game.boardToString());
-		//assertEquals();
-		//TODO: test afmaken methode updateTiles
-	}*/
+		assertEquals(game.board[3][4], OthelloGame.PLAYER2);
+		
+		assertEquals(game.board[3][3], OthelloGame.PLAYER1);
+
+/*		System.out.println("--------------------------");
+		System.out.println(game.getPlayerToMove());
+		System.out.println(game.getMoveDetails());
+		System.out.println(game.boardToString());*/
+	}
 	
 
 	/*@Test

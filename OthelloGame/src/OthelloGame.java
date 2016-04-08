@@ -400,7 +400,7 @@ public class OthelloGame extends AbstractGameModule {
 	/**
 	 * Sets the next player to the other player.
 	 */
-	private void nextPlayer() {
+	protected void nextPlayer() {
 		nextPlayer = otherPlayer(nextPlayer);
 	}
 	
