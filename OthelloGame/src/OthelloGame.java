@@ -23,6 +23,17 @@ public class OthelloGame extends AbstractGameModule {
 	protected int[][] board = new int[8][8];
 	private char player1Char, player2Char;
 	
+	// board values
+	private static int[][] sBOARD_VALUE = {
+		{100, -1, 5, 2, 2, 5, -1, 100},
+		{-1, -10,1, 1, 1, 1,-10, -1},
+		{5 , 1,  1, 1, 1, 1,  1,  5},
+		{2 , 1,  1, 0, 0, 1,  1,  2},
+		{2 , 1,  1, 0, 0, 1,  1,  2},
+		{5 , 1,  1, 1, 1, 1,  1,  5},
+		{-1,-10, 1, 1, 1, 1,-10, -1},
+		{100, -1, 5, 2, 2, 5, -1, 100}};
+	
 	// Variables for on the board
 	protected static final int PLAYER1 = 0;
 	protected static final int PLAYER2 = 1;
@@ -50,18 +61,6 @@ public class OthelloGame extends AbstractGameModule {
 		moveDetails = null;
 		playerResults = new HashMap<String, Integer>();
 		gameView = new GameView(playerOne, playerTwo);
-	}
-	
-	public static void main(String[] args){
-		OthelloGame game = new OthelloGame("piet", "klaas");
-		game.start();
-		System.out.print(game.boardToString());
-			
-		for(int i = 0; i < 61; i++){
-		double[] aiMove = game.doAIMove(game.getCurrentPlayer(),3,game.copyBoard(game.board));
-		game.doPlayerMove(game.getCurrentPlayer(), ""+(int) aiMove[0]+","+(int) aiMove[1]);;
-		System.out.println(game.boardToString());
-		}
 	}
 	
 	/**
@@ -194,9 +193,11 @@ public class OthelloGame extends AbstractGameModule {
 		if(side.equals(playerOne)){
 			//bestValue = Double.NEGATIVE_INFINITY;
 			bestValue = -60;
+			//bestValue = -600;
 		}else if(side.equals(playerTwo)){
 			//bestValue = Double.POSITIVE_INFINITY;
 			bestValue = 60;
+			//bestValue = 600;
 		}
 		for(int i = 0; i < 8; i++){
 			for(int j = 0; j < 8; j++){
@@ -223,14 +224,15 @@ public class OthelloGame extends AbstractGameModule {
 								reply[1] = i;
 							}
 						}
-						reply[2] = bestValue;
+						reply[2] = bestValue; //+ sBOARD_VALUE[j][i];
+						
 						tempBoard[j][i] = EMPTY;
 					}else{
 						int winning = checkWhoWon(tempBoard);
-						if(winning == PLAYER1){
-							bestValue = 60 - depth;
-						}else if(winning == PLAYER2){
-							bestValue = depth - 60;
+						if(winning == PLAYER1_WIN){
+							bestValue = 60 - depth;// + sBOARD_VALUE[j][i];
+						}else if(winning == PLAYER2_WIN){
+							bestValue = depth - 60;// - sBOARD_VALUE[j][i];
 						}else{
 							bestValue = 0;
 						}
@@ -493,7 +495,7 @@ public class OthelloGame extends AbstractGameModule {
 			if(player1 == player2 )
 				return DRAW;
 			
-			return player1 > player2 ? PLAYER1 : PLAYER2;
+			return player1 > player2 ? PLAYER1_WIN : PLAYER2_WIN;
 	}
 	
 	/**
@@ -601,10 +603,10 @@ public class OthelloGame extends AbstractGameModule {
 	}
 	
 	protected void initBoard() {
-		board[3][3] = PLAYER1;
-		board[3][4] = PLAYER2;
-		board[4][4] = PLAYER1;
-		board[4][3] = PLAYER2;
+		board[3][3] = PLAYER2;
+		board[3][4] = PLAYER1;
+		board[4][4] = PLAYER2;
+		board[4][3] = PLAYER1;
 	}
 
 	/**
