@@ -20,13 +20,13 @@ public class OthelloGame extends AbstractGameModule {
 	private HashMap<String, Integer> playerResults;
 	
 	// The board
-	private int[][] board = new int[8][8];
+	protected int[][] board = new int[8][8];
 	private char player1Char, player2Char;
 	
 	// Variables for on the board
-	private static final int PLAYER1 = 0;
-	private static final int PLAYER2 = 1;
-	private static final int EMPTY = 2;
+	protected static final int PLAYER1 = 0;
+	protected static final int PLAYER2 = 1;
+	protected static final int EMPTY = 2;
 
 	// States of the game
 	private static final int PLAYER1_WIN = 0;

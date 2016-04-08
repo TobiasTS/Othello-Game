@@ -9,10 +9,15 @@ public class OthelloGameTest {
 		OthelloGame game = new OthelloGame("Piet","Klaas");
 		game.start();
 		
-		assertEquals(OthelloGame, game.positionValue([3][3]));
+		assertEquals(game.board[0][0], OthelloGame.EMPTY);
+		
+		assertEquals(game.board[3][3], OthelloGame.PLAYER1);
+		assertEquals(game.board[3][4], OthelloGame.PLAYER2);
+		assertEquals(game.board[4][4], OthelloGame.PLAYER1);
+		assertEquals(game.board[4][3], OthelloGame.PLAYER2);
 	}
 	
-	@Test
+	/*@Test
 	public void testUpdateTiles(){
 		OthelloGame game = new OthelloGame("Piet","Klaas");
 		game.start();
@@ -23,7 +28,7 @@ public class OthelloGameTest {
 		System.out.println(game.boardToString());
 		//assertEquals();
 		//TODO: test afmaken methode updateTiles
-	}
+	}*/
 	
 
 	/*@Test
