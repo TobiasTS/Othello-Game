@@ -473,12 +473,12 @@ public class OthelloGame extends AbstractGameModule {
 	 */
 	private int positionValue(int[][] board) {
 		if(boardIsFull(board)){
-			return mostChips();
+			return checkWhoWon(board);
 		}else{
 			if(!getPlayableMoves()){
 				nextPlayer();
 				if(!getPlayableMoves()){
-					return mostChips();
+					return checkWhoWon(board);
 				}				
 				nextPlayer();
 			}
@@ -486,24 +486,7 @@ public class OthelloGame extends AbstractGameModule {
 			return UNCLEAR;
 		}
 	}
-	
-	private int mostChips() {
-		int player1 = 0;
-		int player2 = 0;
-		for(int row = 0; row < 8; row++){
-			for(int column = 0; column < 8; column++){
-				if(board[row][column] == PLAYER1)
-					player1++;
-				else
-					player2++;
-			}
-		}
-		if(player1 == player2 )
-			return DRAW;
 		
-		return player1 > player2 ? PLAYER1 : PLAYER2;
-	}
-	
 	/**
 	 * Decides what the value of the game is at the moment.
 	 * The value can be PLAYER1_WIN, PLAYER2_WIN, DRAW of UNCLEAR.
@@ -521,6 +504,9 @@ public class OthelloGame extends AbstractGameModule {
 						player2++;
 				}
 			}
+			if(player1 == player2 )
+				return DRAW;
+			
 			return player1 > player2 ? PLAYER1 : PLAYER2;
 	}
 	
