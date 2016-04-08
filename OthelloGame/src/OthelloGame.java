@@ -264,7 +264,7 @@ public class OthelloGame extends AbstractGameModule {
 		return reply;
 	}
 	
-	private int[][] copyBoard(int[][] origBoard){
+	protected int[][] copyBoard(int[][] origBoard){
 		int[][] newBoard = new int[8][8];
 		for(int i = 0; i < 8; i++){
 			for(int j = 0; j < 8; j++){
@@ -474,7 +474,7 @@ public class OthelloGame extends AbstractGameModule {
 	 * 
 	 * @return the value of the game.
 	 */
-	private int positionValue(int[][] board) {
+	protected int positionValue(int[][] board) {
 		if(boardIsFull(board)){
 			return checkWhoWon(board);
 		}
@@ -618,7 +618,7 @@ public class OthelloGame extends AbstractGameModule {
 		return canMove;
 	}
 	
-	private void initBoard() {
+	protected void initBoard() {
 		board[3][3] = PLAYER1;
 		board[3][4] = PLAYER2;
 		board[4][4] = PLAYER1;
@@ -665,7 +665,7 @@ public class OthelloGame extends AbstractGameModule {
 	 * @param Y column
 	 * @param i direction
 	 */
-	private void updateTiles(int X, int Y, int i, int[][] board) {
+	protected void updateTiles(int X, int Y, int i, int[][] board) {
 		board[X][Y] = getPlayerNumber();
 		
 		int xOffset = X + OFFSET_X[i];

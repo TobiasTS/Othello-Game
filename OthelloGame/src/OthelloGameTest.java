@@ -3,8 +3,30 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 public class OthelloGameTest {
-
+	
 	@Test
+	public void testStart(){
+		OthelloGame game = new OthelloGame("Piet","Klaas");
+		game.start();
+		
+		assertEquals(OthelloGame, game.positionValue([3][3]));
+	}
+	
+	@Test
+	public void testUpdateTiles(){
+		OthelloGame game = new OthelloGame("Piet","Klaas");
+		game.start();
+		
+		System.out.println(game.boardToString());
+		
+		game.doPlayerMove(game.getPlayerToMove(),"4,2");
+		System.out.println(game.boardToString());
+		//assertEquals();
+		//TODO: test afmaken methode updateTiles
+	}
+	
+
+	/*@Test
 	public void test() {
 		OthelloGame game = new OthelloGame("BBB","WWW");
 		game.start();
@@ -92,6 +114,6 @@ public class OthelloGameTest {
 		System.out.println(game.getMoveDetails());
 		System.out.println(game.boardToString());
 		
-	}
+	}*/
 
 }
