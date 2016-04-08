@@ -188,7 +188,6 @@ public class OthelloGame extends AbstractGameModule {
 	 * 
 	 */
 	public double[] doAIMove(String side, int depth,int[][] board){
-		//TODO fix if cant move
 		double[] reply = new double[3];
 		int[][] tempBoard = new int[8][8];
 		double bestValue = 0.0;
@@ -211,16 +210,6 @@ public class OthelloGame extends AbstractGameModule {
 						double[] bestOpp = doAIMove(nextPlayer,depth-1,tempBoard);
 						nextPlayer();
 						if(side.equals(playerOne)){//maximizing
-							//bestValue = Double.NEGATIVE_INFINITY;
-							//bestValue = 60;
-							/*if(Math.max(Math.max(bestValue,bestOpp[2]), reply[2]) == bestValue){
-								reply[2] = bestValue;
-							}else if(Math.max(Math.max(bestValue,bestOpp[2]), reply[2]) == bestOpp[2]){
-								reply[2] = bestOpp[2];
-								bestValue = bestOpp[2];
-							}else if(Math.max(Math.max(bestValue,bestOpp[2]), reply[2]) == reply[2]){
-								bestValue = reply[2];
-							}*/
 							bestValue = Math.max(bestValue,bestOpp[2]);
 							if(bestValue == bestOpp[2]){
 								reply[0] = j;
@@ -228,13 +217,6 @@ public class OthelloGame extends AbstractGameModule {
 							}
 						}
 						else if(side.equals(playerTwo)){//minimizing
-							//bestValue = Double.POSITIVE_INFINITY;
-							//bestValue = -60;
-							/*if(Math.min(bestValue, bestOpp[2]) == bestValue){
-								reply[2] = bestValue;
-							}else if(Math.min(bestValue, bestOpp[2]) == bestOpp[2]){
-								reply[2] = bestOpp[2];
-							}//elseif reply[2]*/
 							bestValue = Math.min(bestValue,bestOpp[2]);
 							if(bestValue == bestOpp[2]){
 								reply[0] = j;
