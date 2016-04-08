@@ -91,7 +91,7 @@ public class OthelloGame extends AbstractGameModule {
 			player1Char = 'B';
 		}
 		
-		System.out.println(playerOne + " is: " + player1Char );
+		//System.out.println(playerOne + " is: " + player1Char );
 		
 		initBoard();
 	}
