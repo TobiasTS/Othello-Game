@@ -58,9 +58,9 @@ public class OthelloGame extends AbstractGameModule {
 		System.out.print(game.boardToString());
 			
 		for(int i = 0; i < 61; i++){
-		double[] aiMove = game.doAIMove(game.getCurrentPlayer(),5,game.copyBoard(game.board));
-		game.doPlayerMove(game.getCurrentPlayer(), ""+(int) aiMove[0]+","+(int) aiMove[1]);
-		System.out.print(game.boardToString());
+		double[] aiMove = game.doAIMove(game.getCurrentPlayer(),3,game.copyBoard(game.board));
+		game.doPlayerMove(game.getCurrentPlayer(), ""+(int) aiMove[0]+","+(int) aiMove[1]);;
+		System.out.println(game.boardToString());
 		}
 	}
 	
@@ -75,11 +75,11 @@ public class OthelloGame extends AbstractGameModule {
 	public void start() throws IllegalStateException {
 		super.start();
 		
-//		if((Math.random() * 10) >= 5)
+		if((Math.random() * 10) >= 5)
 			nextPlayer = playerOne;
-//		else
-	//		nextPlayer = playerTwo;
-//		nextPlayer = playerTwo;
+		else
+			nextPlayer = playerTwo;
+		nextPlayer = playerTwo;
 			
 		clearBoard();		
 		
@@ -90,6 +90,8 @@ public class OthelloGame extends AbstractGameModule {
 			player2Char = 'W';
 			player1Char = 'B';
 		}
+		
+		System.out.println(playerOne + " is: " + player1Char );
 		
 		initBoard();
 	}
@@ -132,6 +134,7 @@ public class OthelloGame extends AbstractGameModule {
 		//checks if move is legal 
 		if(!moveIsLegal(X,Y,true,board)){
 			moveDetails = "Illegal move";
+			
 			return;
 		}
 
@@ -164,10 +167,10 @@ public class OthelloGame extends AbstractGameModule {
 			moveDetails = "Next move";
 			//moveDetails += '\n';
 			//moveDetails += boardToString();
-			if(getPlayableMoves()){
-				nextPlayer();
-			}else{
+			nextPlayer();
+			if(!getPlayableMoves()){
 				moveDetails =  getPlayerToMove() + " has no available moves!" ;
+				nextPlayer();
 			}
 			
 			break;
@@ -180,7 +183,7 @@ public class OthelloGame extends AbstractGameModule {
 	}
 	
 	/**
-	 * the Ai of orthello gets the best move
+	 * the Ai of othello gets the best move
 	 * 
 	 * 
 	 */
@@ -474,17 +477,17 @@ public class OthelloGame extends AbstractGameModule {
 	private int positionValue(int[][] board) {
 		if(boardIsFull(board)){
 			return checkWhoWon(board);
-		}else{
-			if(!getPlayableMoves()){
-				nextPlayer();
-				if(!getPlayableMoves()){
-					return checkWhoWon(board);
-				}				
-				nextPlayer();
-			}
-			
-			return UNCLEAR;
 		}
+		if(!getPlayableMoves()){
+			nextPlayer();
+			if(!getPlayableMoves()){
+				return checkWhoWon(board);
+			}				
+			nextPlayer();
+		}
+		
+		return UNCLEAR;
+		
 	}
 		
 	/**
@@ -504,6 +507,7 @@ public class OthelloGame extends AbstractGameModule {
 						player2++;
 				}
 			}
+			
 			if(player1 == player2 )
 				return DRAW;
 			
@@ -539,22 +543,16 @@ public class OthelloGame extends AbstractGameModule {
 	 * @returns 2D array with possible playable moves
 	 */
 	private boolean getPlayableMoves(){
-		int[][] playableMoves = new int[63][2];
-		int counter = 0;
 		for(int i = 0; i < 8; i++){
 			for(int j = 0; j < 8; j++){
 				if(board[i][j] == EMPTY){
-					if(moveIsLegal(j, i,false,board)){
+					if(moveIsLegal(i, j,false,board)){
 						return true;
 					}
 				}
 			}
 		}
-		if(counter == 0){
-			return false;
-		}else{
-			return true;
-		}
+		return false;
 	}
 	
 	/**
