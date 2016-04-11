@@ -33,7 +33,7 @@ public class OthelloGameTest {
 	}*/
 	
 
-	/*@Test
+	@Test
 	public void test() {
 		OthelloGame game = new OthelloGame("BBB","WWW");
 		game.start();
@@ -121,6 +121,6 @@ public class OthelloGameTest {
 		System.out.println(game.getMoveDetails());
 		System.out.println(game.boardToString());
 		
-	}*/
+	}
 
 }

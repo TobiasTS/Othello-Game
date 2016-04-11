@@ -180,8 +180,6 @@ public class OthelloGame extends AbstractGameModule {
 	
 	/**
 	 * the Ai of othello gets the best move
-	 * 
-	 * 
 	 */
 	public double[] doAIMove(String side, int depth,int[][] board){
 		double[] reply = new double[3];
@@ -258,7 +256,6 @@ public class OthelloGame extends AbstractGameModule {
 	
 	/**
 	 * Returns the String commenting on the result of the match.
-	 * 
 	 * @return String with a comment on the match.
 	 * @throws IllegalStateException if the match has not yet finished.
 	 */
@@ -384,7 +381,6 @@ public class OthelloGame extends AbstractGameModule {
 		return message;
 	}
 
-	
 	/**
 	 * Returns the gameView component of the game.
 	 * 
@@ -394,7 +390,6 @@ public class OthelloGame extends AbstractGameModule {
 	public Component getView() {
 		return gameView;
 	}
-	
 	
 	/**
 	 * Sets the next player to the other player.
@@ -519,9 +514,9 @@ public class OthelloGame extends AbstractGameModule {
 	}
 	
 	/**
-	 * method that returns the possible playable moves of a player
+	 * method that checks if there is an avaiblable moves
 	 * 
-	 * @returns 2D array with possible playable moves
+	 * @returns true if there is still a possible moves
 	 */
 	private boolean getPlayableMoves(){
 		for(int i = 0; i < 8; i++){
