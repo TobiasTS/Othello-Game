@@ -11,10 +11,12 @@ public class OthelloGameTest {
 		
 		assertEquals(game.board[0][0], OthelloGame.EMPTY);
 		
-		assertEquals(game.board[3][3], OthelloGame.PLAYER1);
-		assertEquals(game.board[3][4], OthelloGame.PLAYER2);
-		assertEquals(game.board[4][4], OthelloGame.PLAYER1);
-		assertEquals(game.board[4][3], OthelloGame.PLAYER2);
+		assertEquals(game.board[3][3], OthelloGame.PLAYER2);
+		assertEquals(game.board[3][4], OthelloGame.PLAYER1);
+		assertEquals(game.board[4][4], OthelloGame.PLAYER2);
+		assertEquals(game.board[4][3], OthelloGame.PLAYER1);
+		
+		System.out.println(game.boardToString());
 	}
 	
 	/*@Test

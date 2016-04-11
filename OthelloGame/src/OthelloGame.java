@@ -78,7 +78,6 @@ public class OthelloGame extends AbstractGameModule {
 			nextPlayer = playerOne;
 		else
 			nextPlayer = playerTwo;
-		nextPlayer = playerTwo;
 			
 		clearBoard();		
 		
@@ -89,8 +88,6 @@ public class OthelloGame extends AbstractGameModule {
 			player2Char = 'W';
 			player1Char = 'B';
 		}
-		
-		//System.out.println(playerOne + " is: " + player1Char );
 		
 		initBoard();
 	}
@@ -491,7 +488,7 @@ public class OthelloGame extends AbstractGameModule {
 						player2++;
 				}
 			}
-			
+
 			if(player1 == player2 )
 				return DRAW;
 			
@@ -632,14 +629,7 @@ public class OthelloGame extends AbstractGameModule {
 			return false;
 		}
 		return offsetCheck(xOffset, yOffset, i, board);
-		
-	/*	if(offsetCheck(xOffset, yOffset,i)){
-			board[xOffset][yOffset] = getPlayerNumber();
-			return true;
-		}else{
-			return false;
-		}*/
-	
+			
 	}
 	
 	/**
@@ -679,6 +669,4 @@ public class OthelloGame extends AbstractGameModule {
 		}
 		return false;
 	}
-	
-
 }
